@@ -1,10 +1,7 @@
 services:
-  almalinux:
+  ubuntu-ansible:
     build: .
-    container_name: almalinux
-    hostname: almalinux
     ports:
       - "2222:22"
-    privileged: true
-    dns:
-      - 8.8.8.8
+    container_name: ubuntu-ansible
+    tty: true
