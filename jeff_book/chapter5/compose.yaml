@@ -1,0 +1,8 @@
+services:
+  solr:
+    build: .
+    container_name: solr.test
+    hostname: solr.test
+    ports:
+      - "2222:22"
+

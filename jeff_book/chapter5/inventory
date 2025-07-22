@@ -1,0 +1,10 @@
+# Application servers
+[solr]
+solr.test ansible_host=localhost
+
+# Variables
+[solr:vars]
+ansible_port=2222
+ansible_user=ansible 
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_python_interpreter=auto_silent
