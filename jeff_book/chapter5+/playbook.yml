@@ -3,6 +3,12 @@
   hosts: apache
   become: yes
 
+  vars:
+    proxy_vars:
+      http_proxy: http://example-proxy:80/
+      https_proxy: https://example-proxy:80/
+
+
   handlers:
     - name: Restart Apache
       service:
@@ -15,6 +21,29 @@
     #     state: restarted
 
   tasks:
+    - name: Download a file
+      get_url: 
+        url: http://ipv4.download.thinkbroadband.com/20MB.zip
+        dest: /tmp
+      # environment: proxy_vars
+
+    - name: Add env vars to the remote user's shell
+      lineinfile:
+        dest: "~/.profile"
+        regexp: '^ENV_VAR='
+        line: 'ENV_VAR=value'
+      become: false
+
+    - name: Get value of an env var
+      shell: 'source ~/.profile && echo $ENV_VAR'
+      register: foo
+      become: false
+      args:
+        executable: /bin/bash
+
+    - debug: msg="The var is {{ foo.stdout }}"
+      become: false
+
     - name: Install Apache
       apt: 
         name: apache2 
@@ -34,7 +63,7 @@
           dest: /etc/apache2/sites-available/000-default.conf
       notify: 
         - Restart Apache
-        - Restart memcached
+        # - Restart memcached
 
     # - name: Make sure handlers are flushed
     #   meta: flush_handlers
