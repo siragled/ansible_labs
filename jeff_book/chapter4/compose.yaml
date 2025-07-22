@@ -1,0 +1,32 @@
+networks:
+  lab_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.56.0/24
+
+services:
+  node1:
+    build: .
+    container_name: node1.test
+    hostname: node1.test
+    networks:
+      lab_net:
+        ipv4_address: 192.168.56.11
+
+  node2:
+    build: .
+    container_name: node2.test
+    hostname: node2.test
+    networks:
+      lab_net:
+        ipv4_address: 192.168.56.12
+
+  node3:
+    build: .
+    container_name: node3.test
+    hostname: node3.test
+    networks:
+      lab_net:
+        ipv4_address: 192.168.56.13
+
