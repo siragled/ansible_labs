@@ -1,0 +1,5 @@
+---
+key: value
+apache_package: apache2
+apache_service: apache2
+apache_cfg_dir: /etc/apache2

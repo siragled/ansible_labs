@@ -1,0 +1,30 @@
+---
+- name: Install Apache
+  package: 
+    name: "{{ apache_package }}"
+    state: present
+
+- name: Copy configuration files
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - src: apache2.conf
+      dest: "{{ apache_cfg_dir }}/apache2.conf"
+    - src: 000-default.conf
+      dest: "{{ apache_cfg_dir }}/sites-available/000-default.conf"
+  notify: 
+    - Restart Apache
+    # - Restart memcached
+
+# - name: Make sure handlers are flushed
+#   meta: flush_handlers
+
+- name: Ensure Apache is started now and at boot
+  service:
+    name: "{{ apache_service }}"
+    state: started
+    enabled: true

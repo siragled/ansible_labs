@@ -1,0 +1,23 @@
+---
+- name: Download a file
+  get_url: 
+    url: http://ipv4.download.thinkbroadband.com/20MB.zip
+    dest: /tmp
+  # environment: proxy_vars
+
+- name: Add env vars to the remote user's shell
+  lineinfile:
+    dest: "~/.profile"
+    regexp: '^ENV_VAR='
+    line: 'ENV_VAR=value'
+  become: false
+
+- name: Get value of an env var
+  shell: 'source ~/.profile && echo $ENV_VAR'
+  register: foo
+  become: false
+  args:
+    executable: /bin/bash
+
+
+

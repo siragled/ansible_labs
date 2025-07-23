@@ -1,75 +1,18 @@
 ---
 - name: Install Apache
   hosts: apache
-  become: yes
+  become: true
 
   vars:
     proxy_vars:
       http_proxy: http://example-proxy:80/
       https_proxy: https://example-proxy:80/
 
+  vars_files:
+    - vars/apache_default.yml
 
   handlers:
-    - name: Restart Apache
-      service:
-        name: apache2
-        state: restarted
-
-    # - name: Restart memcached
-    #   service:
-    #     name: memcached
-    #     state: restarted
+    - import_tasks: handlers/apache.yml
 
   tasks:
-    - name: Download a file
-      get_url: 
-        url: http://ipv4.download.thinkbroadband.com/20MB.zip
-        dest: /tmp
-      # environment: proxy_vars
-
-    - name: Add env vars to the remote user's shell
-      lineinfile:
-        dest: "~/.profile"
-        regexp: '^ENV_VAR='
-        line: 'ENV_VAR=value'
-      become: false
-
-    - name: Get value of an env var
-      shell: 'source ~/.profile && echo $ENV_VAR'
-      register: foo
-      become: false
-      args:
-        executable: /bin/bash
-
-    - debug: msg="The var is {{ foo.stdout }}"
-      become: false
-
-    - name: Install Apache
-      apt: 
-        name: apache2 
-        state: present
-
-    - name: Copy configuration files
-      copy:
-        src: "{{ item.src }}"
-        dest: "{{ item.dest }}"
-        owner: root
-        group: root
-        mode: 0644
-      with_items:
-        - src: apache2.conf
-          dest: /etc/apache2/apache2.conf
-        - src: 000-default.conf
-          dest: /etc/apache2/sites-available/000-default.conf
-      notify: 
-        - Restart Apache
-        # - Restart memcached
-
-    # - name: Make sure handlers are flushed
-    #   meta: flush_handlers
-
-    - name: Ensure Apache is started now and at boot
-      service:
-        name: apache2 
-        state: started
-        enabled: true
+    - import_tasks: tasks/apache.yml

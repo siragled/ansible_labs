@@ -1,0 +1,57 @@
+---
+- hosts: all
+  become: true
+
+  vars:
+    node_apps_location: /usr/local/opt/node
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install universe repository (Node.js lives here)
+      apt_repository:
+        repo: "deb http://archive.ubuntu.com/ubuntu {{ ansible_distribution_release }} universe"
+        state: present
+
+    - name: Install Node.js & npm
+      apt:
+        name:
+          - nodejs
+          - npm
+        state: present
+
+    # - name: Ensure UFW is stopped (test server only)
+    #   ufw:
+    #     state: disabled
+
+    - name: Install Forever globally
+      npm:
+        name: forever
+        global: true
+        state: present
+
+    - name: Ensure Node.js app folder exists
+      file:
+        path: "{{ node_apps_location }}"
+        state: directory
+
+    - name: Copy example Node.js app to server
+      copy:
+        src: app
+        dest: "{{ node_apps_location }}"
+
+    - name: Install app dependencies defined in package.json
+      npm:
+        path: "{{ node_apps_location }}/app"
+
+    - name: Check list of running Node.js apps
+      command: forever list
+      register: forever_list
+      changed_when: false
+
+    - name: Start example Node.js app (only if not running)
+      command: "forever start {{ node_apps_location }}/app/app.js"
+      when: forever_list.stdout.find(node_apps_location + '/app/app.js') == -1
