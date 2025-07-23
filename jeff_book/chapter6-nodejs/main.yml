@@ -5,38 +5,21 @@
   vars:
     node_apps_location: /usr/local/opt/node
 
+  roles:
+    - nodejs
+
   tasks:
     - name: Update apt cache
       apt:
         update_cache: true
         cache_valid_time: 3600
 
-    - name: Install universe repository (Node.js lives here)
-      apt_repository:
-        repo: "deb http://archive.ubuntu.com/ubuntu {{ ansible_distribution_release }} universe"
-        state: present
-
-    - name: Install Node.js & npm
-      apt:
-        name:
-          - nodejs
-          - npm
-        state: present
-
-    # - name: Ensure UFW is stopped (test server only)
-    #   ufw:
-    #     state: disabled
-
-    - name: Install Forever globally
-      npm:
-        name: forever
-        global: true
-        state: present
-
     - name: Ensure Node.js app folder exists
       file:
         path: "{{ node_apps_location }}"
         state: directory
+
+    # - include_role: nodejs
 
     - name: Copy example Node.js app to server
       copy:

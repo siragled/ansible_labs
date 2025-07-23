@@ -1,0 +1,21 @@
+- name: Install universe repository (Node.js lives here)
+  apt_repository:
+    repo: "deb http://archive.ubuntu.com/ubuntu {{ ansible_distribution_release }} universe"
+    state: present
+
+- name: Install Node.js & npm
+  apt:
+    name:
+      - nodejs
+      - npm
+    state: present
+
+# - name: Ensure UFW is stopped (test server only)
+#   ufw:
+#     state: disabled
+
+- name: Install Forever globally
+  npm:
+    name: forever
+    global: true
+    state: present
